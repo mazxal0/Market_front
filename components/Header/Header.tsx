@@ -7,7 +7,7 @@ import classes from './Header.module.scss';
 const Header = () => {
   return (
     <div className={classes.headerWrapper}>
-      <Container size="lg" style={{ display: 'flex', alignItems: 'center' }}>
+      <Container size="lg" style={{ display: 'flex', alignItems: 'center', height: '5vh' }}>
         {/* Логотип */}
         <Title order={3} style={{ margin: 0, fontSize: 15 }}>
           <Link href="/" className={classes.logo}>
