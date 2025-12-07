@@ -1,0 +1,44 @@
+.segmentedRoot {
+    background: transparent !important;
+    margin: 0 auto;
+    padding: 0 !important;
+    gap: 0 !important;
+
+    border-radius: 12px !important;
+    overflow: hidden !important;
+
+    outline: 2px solid #000;
+    outline-offset: -2px;
+
+    box-shadow: inset 0 0 0 2px #000;
+    box-sizing: border-box !important;
+}
+
+.segmentedIndicator {
+    background: #000 !important;
+    padding: 0 !important;
+
+    border-radius: 10px !important;
+
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.segmentedControl {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.segmentedLabel {
+    color: #000 !important;
+    padding: 12px 24px !important;
+    margin: 0 !important;
+    font-weight: 500;
+
+    &[data-active='true'] {
+        color: #fff !important;
+    }
+}

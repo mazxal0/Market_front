@@ -1,9 +1,23 @@
 export interface UserRegistration {
   name: string
   surname: string
-  lastname: string
+  last_name: string
   email: string
-  phone: string
+  number: string
   password: string
-  confirmPassword: string
+  repeat_password: string
+}
+
+export interface UserLogin {
+  email: string
+  password: string
+}
+
+export interface User {
+  Name: string
+  Surname: string
+  LastName: string
+  Email: string
+  Password: string
+  Number: string
 }

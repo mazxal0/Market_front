@@ -15,8 +15,16 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background) !important;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, sans-serif;
+  margin: 0;
 }
 
+.mantine-PasswordInput-visibility-toggle {
+  color: black !important;
+}
+
+.mantine-PasswordInput-visibility-toggle:hover {
+  color: darkgray !important;
+}
