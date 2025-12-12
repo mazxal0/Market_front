@@ -18,7 +18,7 @@ export function Providers({ children }: { children: ReactNode }) {
       }}
     >
       <ModalsProvider>
-
+        <AuthProvider/>
           <QueryProvider>
             {children}
           </QueryProvider>

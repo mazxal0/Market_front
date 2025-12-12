@@ -21,3 +21,10 @@ export interface User {
   Password: string
   Number: string
 }
+
+export interface ChangeUser {
+  Name: string
+  Surname: string
+  LastName: string
+  Number: string
+}

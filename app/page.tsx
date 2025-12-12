@@ -3,10 +3,28 @@
 import { Container, Text, Button, Box, Group, Badge, Stack, Paper, Title } from '@mantine/core';
 import { IconArrowRight } from '@tabler/icons-react';
 import Marquee from 'react-fast-marquee';
+import CatalogPage from "@/components/pages/catalog";
+import ContactsPage from "@/components/pages/contacts";
+import {usePathname, useRouter } from 'next/navigation';
 
 export default function Home() {
+
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const handleClick = (id: string) => {
+    if (pathname !== '/') {
+      router.push(`/#${id}`)
+    } else {
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
+  }
+
   return (
-    <Box>
+    <Box id={'home'} style={{scrollMarginTop: 60}}>
       <Marquee speed={110} gradient={false}>
         <Text c="#fff" fw={700} fz={64} mr={100}>
           ТОВАРЫ ИЗ КИТАЯ ОПТОМ И В РОЗНИЦУ
@@ -20,7 +38,6 @@ export default function Home() {
         <Group justify={'space-between'} w={'95vw'}>
         <Stack gap="xl">
 
-          {/* Бейджи */}
           <Group gap="md">
             <Badge fw={500} fz={18} variant="filled" radius="xl" bg="#141414ff" c="#7B79EC" p={'lg'}>
               Быстро
@@ -33,7 +50,6 @@ export default function Home() {
             </Badge>
           </Group>
 
-          {/* Тексты */}
           <Stack gap={2}>
             <Text c="#fff" fz={40} fw={600} lh={1} m={0}>
               Надежные поставщики
@@ -50,10 +66,10 @@ export default function Home() {
           </Stack>
 
           <Group>
-            <Button fw={500} radius={'md'} color={'#fff'} variant="outline" size={'md'}>
+            <Button onClick={() => handleClick('catalog')} fw={500} radius={'md'} color={'#fff'} variant="outline" size={'md'}>
               Каталог товаров
             </Button>
-            <Button fw={500} variant={'filled'} bg={'transparent'} rightSection={<IconArrowRight/>}>
+            <Button onClick={() => handleClick('contacts')} fw={500} variant={'filled'} bg={'transparent'} rightSection={<IconArrowRight/>}>
               Связаться с нами
             </Button>
           </Group>
@@ -134,7 +150,6 @@ export default function Home() {
               </Paper>
             </Stack>
           </Paper>
-
           <Paper
             px={20}
             py={10}
@@ -170,69 +185,12 @@ export default function Home() {
               </Paper>
             </Stack>
           </Paper>
-
         </Box>
         </Group>
       </Container>
 
-
-      <Paper
-        bg={'#EEEEEE'}
-        radius={'xl'}
-        pos={'relative'}
-        mt={50}
-        // p={{ base: 'md', sm: 'xl' }}
-        style={{ minHeight: '92vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-      >
-        {/* Верхний левый шарик */}
-        <div style={{
-          position: 'absolute',
-          top: 15,
-          left: 25,
-          width: 10,
-          height: 10,
-          backgroundColor: 'black',
-          borderRadius: '50%',
-        }} />
-
-        {/* Верхняя полоса между шариками */}
-        <div style={{
-          position: 'absolute',
-          top: 15,                 // чуть ниже верхних шариков
-          left: '50%',             // центр по горизонтали
-          transform: 'translateX(-50%)', // сдвигаем влево на половину ширины
-          width: '60px',           // ширина линии
-          height: 10,              // толщина линии
-          backgroundColor: 'black',
-          borderRadius: 5,         // сглаженные края
-        }} />
-
-        {/* Верхний правый шарик */}
-        <div style={{
-          position: 'absolute',
-          top: 15,
-          right: 25,
-          width: 10,
-          height: 10,
-          backgroundColor: 'black',
-          borderRadius: '50%',
-        }} />
-
-        <Title>
-          Каталог товаров
-        </Title>
-
-
-        <Paper
-          bg="transparent"
-          p={{ base: 'md', sm: 'lg', md: 40 }}
-          mx="auto"
-          w={{ base: '90%', sm: '70%', md: '65%', lg: '45%', xl: '37%' }}
-
-        >
-
-        </Paper>
-      </Paper>
+      <CatalogPage/>
+      <ContactsPage/>
     </Box>
   );
 }

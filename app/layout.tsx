@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import { Inter } from 'next/font/google';
 import { Providers } from '@/components/providers/provider';
 import { Metadata } from 'next';
+import {CartModal} from "@/components/Modals/CartModal";
+import dynamic from 'next/dynamic';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -15,6 +17,7 @@ export const metadata: Metadata = {
   title: 'My App',
   description: 'My App Description',
 };
+
 
 export default function RootLayout({
                                      children,
@@ -40,6 +43,7 @@ export default function RootLayout({
         <Header height={60} />
         <div style={{ paddingTop: '60px' }}>
           {children}
+          <CartModal />
         </div>
       </AppShell>
     </Providers>

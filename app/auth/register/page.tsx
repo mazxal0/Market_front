@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { UserRegistration } from '@/types';
 import {userStore} from "@/stores";
 import { useRouter } from 'next/navigation';
+import VerifyCodeModal from "@/components/Modals/VerifyCode";
 
 export default function RegisterPage() {
     const form = useForm<UserRegistration>({
@@ -46,11 +47,8 @@ export default function RegisterPage() {
     });
 
     const [loading, setLoading] = useState(false);
-    const router = useRouter()
-
+    const {error} = userStore
     const [codeModalOpen, setCodeModalOpen] = useState(false);
-    const [code, setCode] = useState('');
-    const [confirmLoading, setConfirmLoading] = useState(false);
 
     const handleSubmit = async (values: typeof form.values) => {
         try {
@@ -219,8 +217,10 @@ export default function RegisterPage() {
                                 />
                             </Group>
                         </Stack>
-
-                        <Button type="submit" fullWidth mt="xl" size={"md"} bg="#262626" loading={loading}>
+                        {error && <Text mt={15} ta={'center'} c={'red'}>
+                            {error}
+                        </Text>}
+                        <Button type="submit" fullWidth mt="md" size={"md"} bg="#262626" loading={loading}>
                             Зарегистрироваться
                         </Button>
 
@@ -233,106 +233,7 @@ export default function RegisterPage() {
                 </Paper>
             </Paper>
 
-          <Modal
-            opened={codeModalOpen}
-            onClose={() => setCodeModalOpen(false)}
-            title="Подтверждение"
-            centered
-            overlayProps={{
-                blur: 3
-            }}
-            c={'black'}
-            styles={{
-                header: {
-                    backgroundColor: '#eee',
-                    display: 'flex',          // нужен flex
-                    justifyContent: 'center', // центрируем контент
-                },
-                title: {
-                    fontFamily: 'var(--font-inter)',
-                    fontWeight: 700,
-                    fontSize: 30,
-                    marginLeft: 20,
-                    // marginTop: 20// убираем лишние маргины
-                },
-                body: {
-                    padding: '20px',          // паддинг для контента
-                    backgroundColor: '#eee',
-                },
-            }}
-          >
-              <Stack>
-                  <Text
-                    size="md"
-                    ta="center"
-                    styles={{
-                        root: {
-                            width: '100%',         // контейнер на всю ширину модалки
-                            display: 'flex',
-                            justifyContent: 'center', // центрируем содержимое
-                        },
-                    }}
-                  >
-                    <span style={{ maxWidth: 350, display: 'block' }}>
-                      Введите код подтверждения, отправленный вам на почту
-                    </span>
-                  </Text>
-
-                  <PinInput
-                    length={6}
-                    value={code}
-                    onChange={setCode}
-                    oneTimeCode
-                    size="lg"
-                    c={'black'}
-                    inputMode="numeric"
-                    type="number"
-                    styles={{
-                        root: {
-                            display: 'flex',
-                            justifyContent: 'center', // Центрируем все ячейки
-                            gap: '10px',              // Расстояние между ячейками
-                        },
-                        input: {
-                            backgroundColor: 'white',
-                            borderColor: 'gray',
-                            borderRadius: 8,
-                            width: 50,
-                            height: 50,
-                            fontSize: 24,
-                            textAlign: 'center',
-                            color: '#000',
-                        },
-                    }}
-                  />
-
-                  <Button
-                    mt="md"
-                    size="lg"
-                    bg={'#262626'}
-                    fw={500}
-                    fz={18}
-                    loading={confirmLoading}
-                    onClick={async () => {
-                        try {
-                            setConfirmLoading(true)
-
-                            await userStore.secondFAMethod(code, form.values.email) // 👈 твой API
-
-                            setCodeModalOpen(false)
-                            router.push('/')
-
-                        } catch (e) {
-                            alert('Неверный код')
-                        } finally {
-                            setConfirmLoading(false)
-                        }
-                    }}
-                  >
-                      Подтвердить
-                  </Button>
-              </Stack>
-          </Modal>
+          <VerifyCodeModal setCodeModalOpen={setCodeModalOpen} codeModalOpen={codeModalOpen} email={form.values.email}/>
       </>
     );
 }

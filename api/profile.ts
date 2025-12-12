@@ -1,4 +1,4 @@
-import { User } from '@/types';
+import {ChangeUser, User} from '@/types';
 import api from "@/api/axios";
 
 export async function fetchProfile(): Promise<User> {
@@ -6,7 +6,7 @@ export async function fetchProfile(): Promise<User> {
   return data.user;
 }
 
-export async function updateProfile(updatedData: Partial<User>): Promise<User> {
-  const { data } = await api.put('/api/profile', updatedData);
+export async function updateProfile(updatedData: Partial<ChangeUser>): Promise<User> {
+  const { data } = await api.post('/users/me', updatedData);
   return data;
 }

@@ -1,10 +1,14 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { UserRegistration } from '@/types';
 import {jwtDecode} from 'jwt-decode';
+import {cartStore} from "@/stores/cartStore";
+import axios from "@/api/axios";
 
 interface AccessTokenPayload {
-  userId: string;
+  user_id: string;
   role: Role;
+  name: string;
+  cart_id: string;
   exp?: number;
   iat?: number;
 }
@@ -18,14 +22,16 @@ export class UserStore {
   userId: string = '';
   name: string = '';
   role: Role = Role.User;
+  cartId: string = '';
   accessToken: string | null = null;
   isAuthenticated: boolean = false;
   isLoading: boolean = false;
   error: string | null = null;
 
-  private readonly API_URL = 'http://localhost:8080';
+  private readonly API_URL = 'http://127.0.0.1:8080';
 
   constructor() {
+    this.error = null
     makeAutoObservable(this);
     this.loadFromStorage();
   }
@@ -35,9 +41,12 @@ export class UserStore {
     const saved = localStorage.getItem('user');
     if (saved) {
       const data = JSON.parse(saved);
+
       runInAction(() => {
         this.userId = data.userId || '';
         this.name = data.name || '';
+        this.cartId = data.cartId || '';
+        this.role = data.role || '';
         this.accessToken = data.accessToken || null;
         this.isAuthenticated = !!data.accessToken && this.checkTokenValidity(data.accessToken);
       });
@@ -50,7 +59,9 @@ export class UserStore {
       'user',
       JSON.stringify({
         userId: this.userId,
+        cartId: this.cartId,
         name: this.name,
+        role: this.role,
         accessToken: this.accessToken,
       })
     );
@@ -104,21 +115,22 @@ export class UserStore {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
-        credentials: 'include', // refreshToken в cookie
+        credentials: 'include',
       });
 
+      // читаем тело один раз
+      const data = await response.json();
+
       if (!response.ok) {
-        const text = await response.text();
-        let message = 'Ошибка регистрации';
-        try {
-          const json = JSON.parse(text);
-          message = json.message || json.error || message;
-        } catch {}
+        // если сервер вернул ошибку
+        const message =  data?.message || 'Ошибка регистрации';
+        runInAction(() => {
+          this.error = message;
+        });
         throw new Error(message);
       }
 
-      const data = await response.json();
-
+      // регистрация успешна
       runInAction(() => {
         this.userId = data.userId;
         this.name = data.name;
@@ -138,6 +150,7 @@ export class UserStore {
       runInAction(() => (this.isLoading = false));
     }
   }
+
 
   async logout() {
     try {
@@ -168,12 +181,23 @@ export class UserStore {
       if (!response.ok) throw new Error('Refresh failed');
 
       const data = await response.json();
+
+      const { access_token } = data;
+      if (!access_token) throw new Error('Access token не получен');
+
+      const decoded = jwtDecode<AccessTokenPayload>(access_token);
       runInAction(() => {
-        this.accessToken = data.accessToken;
+        this.userId = decoded.user_id;
+        this.role = decoded.role;
+        this.name = decoded.name;
+        this.cartId = decoded.cart_id
+        this.accessToken = access_token;
+        this.isAuthenticated = true;
+        cartStore.setCartId(decoded.cart_id)
         this.saveToStorage();
       });
 
-      return data.accessToken;
+      return data;
     } catch (err) {
       console.error('Refresh token error:', err);
       this.logout();
@@ -213,12 +237,14 @@ export class UserStore {
       if (!access_token) throw new Error('Access token не получен');
 
       const decoded = jwtDecode<AccessTokenPayload>(access_token);
-
       runInAction(() => {
-        this.userId = decoded.userId;
+        this.userId = decoded.user_id;
         this.role = decoded.role;
+        this.name = decoded.name;
+        this.cartId = decoded.cart_id
         this.accessToken = access_token;
         this.isAuthenticated = true;
+        cartStore.setCartId(decoded.cart_id)
         this.saveToStorage();
       });
 

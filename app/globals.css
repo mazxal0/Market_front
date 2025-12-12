@@ -28,3 +28,10 @@ body {
 .mantine-PasswordInput-visibility-toggle:hover {
   color: darkgray !important;
 }
+
+html,
+body,
+#root,
+.mantine-AppShell-main {
+  scroll-behavior: smooth;
+}
